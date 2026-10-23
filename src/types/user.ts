@@ -10,6 +10,11 @@ export interface Session {
   expiresAt: string
 }
 
+export interface AuthResponse {
+  token: string
+  session: Session
+}
+
 export interface LoginInput {
   email: string
   password: string
@@ -41,6 +46,7 @@ export interface Wallet {
   address: string
   network: Network
   label: string
+  connected: boolean
 }
 
 export interface WalletInput {

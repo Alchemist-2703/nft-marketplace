@@ -6,6 +6,8 @@ export const nftKeys = {
   all: ["nfts"] as const,
   list: (params: NftListParams) => [...nftKeys.all, "list", params] as const,
   detail: (id: string) => [...nftKeys.all, "detail", id] as const,
+  related: (category: string, excludeId: string) =>
+    [...nftKeys.all, "related", category, excludeId] as const,
 }
 
 export function nftListQuery(params: NftListParams) {
@@ -19,5 +21,15 @@ export function nftDetailQuery(id: string) {
   return queryOptions({
     queryKey: nftKeys.detail(id),
     queryFn: ({ signal }) => getNft(id, signal),
+  })
+}
+
+export function relatedNftsQuery(category: string, excludeId: string) {
+  return queryOptions({
+    queryKey: nftKeys.related(category, excludeId),
+    queryFn: async ({ signal }) => {
+      const result = await listNfts({ category, pageSize: 6 }, signal)
+      return result.items.filter((item) => item.id !== excludeId).slice(0, 5)
+    },
   })
 }

@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useNavigate, useSearch } from "@tanstack/react-router"
+import { Drawer } from "@/components/Drawer"
 import { NativeSelect } from "@/components/NativeSelect"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -9,11 +11,14 @@ import { NftGridSkeleton } from "@/features/catalog/components/NftGridSkeleton"
 import { Pagination } from "@/features/catalog/components/Pagination"
 import { PAGE_SIZE, SORT_OPTIONS } from "@/features/catalog/constants"
 import { nftListQuery } from "@/features/catalog/queries"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import type { NftSort } from "@/types/nft"
 
 export function HomePage() {
   const search = useSearch({ from: "/" })
   const navigate = useNavigate({ from: "/" })
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data, isPending, isError, isFetching, refetch } = useQuery({
     ...nftListQuery({ ...search, pageSize: PAGE_SIZE }),
@@ -50,7 +55,7 @@ export function HomePage() {
       <>
         <ul
           aria-busy={isRefreshing}
-          className={`grid gap-6 sm:grid-cols-2 xl:grid-cols-3 ${isRefreshing ? "opacity-60" : ""}`}
+          className={`grid grid-cols-1 gap-6 min-[480px]:grid-cols-2 xl:grid-cols-3 ${isRefreshing ? "opacity-60" : ""}`}
         >
           {data.items.map((nft) => (
             <NftCard key={nft.id} nft={nft} />
@@ -63,22 +68,35 @@ export function HomePage() {
 
   return (
     <div className="grid gap-10 lg:grid-cols-[310px_1fr]">
-      <aside>
-        <CatalogFilters key={filtersKey} search={search} />
-      </aside>
+      {isDesktop && (
+        <aside aria-label="Filtros">
+          <CatalogFilters key={filtersKey} search={search} />
+        </aside>
+      )}
 
-      <section aria-labelledby="catalog-title">
+      <section aria-labelledby="catalog-title" className="min-w-0">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h1 id="catalog-title" className="text-lg font-bold">
             Todos os NFTs
           </h1>
-          <div className="flex items-center gap-3">
+
+          <div className="flex flex-wrap items-center gap-3">
+            {!isDesktop && (
+              <Button
+                type="button"
+                variant="outline"
+                aria-haspopup="dialog"
+                onClick={() => setFiltersOpen(true)}
+              >
+                Filtros{hasFilters ? " (ativos)" : ""}
+              </Button>
+            )}
             <Label htmlFor="sort" className="whitespace-nowrap">
               Ordenar por:
             </Label>
             <NativeSelect
               id="sort"
-              className="w-56"
+              className="w-56 max-w-full"
               value={search.sort ?? "newest"}
               onChange={(event) =>
                 navigate({
@@ -110,6 +128,28 @@ export function HomePage() {
 
         {content}
       </section>
+
+      {!isDesktop && (
+        <Drawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filtros">
+          {filtersOpen && (
+            <div
+              onSubmit={() => setFiltersOpen(false)}
+              onChange={(event) => {
+                if (event.target instanceof HTMLSelectElement) {
+                  setFiltersOpen(false)
+                }
+              }}
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest("button[type=button]")) {
+                  setFiltersOpen(false)
+                }
+              }}
+            >
+              <CatalogFilters key={filtersKey} search={search} />
+            </div>
+          )}
+        </Drawer>
+      )}
     </div>
   )
 }

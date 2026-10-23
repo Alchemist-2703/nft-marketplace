@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse } from "msw"
+import { http, HttpResponse } from "msw"
 import Decimal from "decimal.js"
 import type { ApiError, Paginated } from "@/types/common"
 import type { Nft, NftSort } from "@/types/nft"
@@ -23,9 +23,7 @@ function sortNfts(nfts: Nft[], sort: NftSort): Nft[] {
 }
 
 export const nftHandlers = [
-  http.get("/api/nfts", async ({ request }) => {
-    await delay(300)
-
+  http.get("/api/nfts", ({ request }) => {
     const params = new URL(request.url).searchParams
     const q = params.get("q")?.trim().toLowerCase() ?? ""
     const category = params.get("category")
@@ -39,9 +37,7 @@ export const nftHandlers = [
 
     if (q) {
       result = result.filter(
-        (nft) =>
-          nft.name.toLowerCase().includes(q) ||
-          nft.creator.toLowerCase().includes(q),
+        (nft) => nft.name.toLowerCase().includes(q) || nft.creator.toLowerCase().includes(q),
       )
     }
     if (category) {
@@ -64,9 +60,7 @@ export const nftHandlers = [
     return HttpResponse.json(body)
   }),
 
-  http.get("/api/nfts/:id", async ({ params }) => {
-    await delay(300)
-
+  http.get("/api/nfts/:id", ({ params }) => {
     const nft = getDb().nfts.find((item) => item.id === params.id)
     if (!nft) {
       const error: ApiError = { code: "NOT_FOUND", message: "NFT não encontrado." }

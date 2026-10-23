@@ -9,10 +9,13 @@ export interface NftEdition {
 
 export interface Nft {
   id: string
+  tokenId: string
   name: string
   description: string
   creator: string
+  collection: string
   category: string
+  attributes: string[]
   images: string[]
   editions: NftEdition[]
   version: number

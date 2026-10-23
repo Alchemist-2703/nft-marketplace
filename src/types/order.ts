@@ -8,6 +8,7 @@ export interface CreateOrderInput {
   quoteId: string
   walletId: string
   network: Network
+  couponCode: string | null
 }
 
 export interface Order {
@@ -18,6 +19,8 @@ export interface Order {
   discountEth: EthString
   networkFeeEth: EthString
   totalEth: EthString
+  network: Network
+  walletLabel: string
   transactionHash: string | null
   explorerUrl: string | null
   declineReason: string | null
