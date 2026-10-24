@@ -68,8 +68,10 @@ export function RootLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* CORREÇÃO: tabIndex={0} garante que seja o primeiríssimo elemento focável por Tab */}
       <a
         href="#main-content"
+        tabIndex={0}
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
       >
         Ir para o conteúdo principal

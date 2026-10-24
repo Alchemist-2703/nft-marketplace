@@ -7,16 +7,16 @@ test.describe("catálogo (desktop)", () => {
     await page.goto("/")
     await expect(page.getByText("36 NFTs", { exact: true })).toBeVisible()
 
-    await page.getByLabel("Buscar").fill("NFT #01")
-    await page.getByLabel("Buscar").press("Enter")
+    await page.getByLabel("Buscar", { exact: true }).fill("NFT #01")
+    await page.getByLabel("Buscar", { exact: true }).press("Enter")
     await expect(page.getByText("10 NFTs", { exact: true })).toBeVisible()
     await expect(page).toHaveURL(/q=/)
 
-    await page.getByLabel("Categoria").selectOption("Arte")
+    await page.getByLabel("Categoria", { exact: true }).selectOption("Arte")
     await expect(page.getByText("2 NFTs", { exact: true })).toBeVisible()
     await expect(page).toHaveURL(/category=Arte/)
 
-    await page.getByLabel("Ordenar por:").selectOption("price_desc")
+    await page.getByLabel("Ordenar por:", { exact: true }).selectOption("price_desc")
     await expect(page).toHaveURL(/sort=price_desc/)
   })
 
@@ -36,15 +36,15 @@ test.describe("catálogo (desktop)", () => {
     await expect(page.locator("main ul li h2").first()).toHaveText("NFT #012")
 
     await page.goto("/?page=2")
-    await page.getByLabel("Categoria").selectOption("Arte")
+    await page.getByLabel("Categoria", { exact: true }).selectOption("Arte")
     await expect(page).not.toHaveURL(/page=/)
   })
 
   test("resultado vazio mostra mensagem e permite limpar", async ({ page }) => {
     await page.goto("/")
-    await page.getByLabel("Buscar").fill("zzzz")
-    await page.getByLabel("Buscar").press("Enter")
-    await expect(page.getByText("Nenhum NFT encontrado para esses filtros.")).toBeVisible()
+    await page.getByLabel("Buscar", { exact: true }).fill("zzzz")
+    await page.getByLabel("Buscar", { exact: true }).press("Enter")
+    await expect(page.getByText("Nenhum NFT encontrado para esses filtros.", { exact: true })).toBeVisible()
     await page.getByRole("button", { name: "Limpar filtros" }).click()
     await expect(page.getByText("36 NFTs", { exact: true })).toBeVisible()
   })
