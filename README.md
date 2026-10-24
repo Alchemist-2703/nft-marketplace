@@ -14,7 +14,7 @@ Marketplace de NFTs em **React + TypeScript**, com API, autenticação, carteira
 | Cliente HTTP | Axios |
 | Tempo real | Socket.IO (`socket.io-client`) |
 | Estilos / componentes | Tailwind CSS 4 + shadcn/ui |
-| Mocking | MSW 2 + `@mswjs/socket.io-binding` |
+| Mocking | MSW 2  |
 | Testes E2E / visual | Playwright (Chromium) |
 | Auditoria | Lighthouse |
 
@@ -133,7 +133,10 @@ Gera `lighthouse/reports/*.html|json` (3 medições por página e perfil) e `lig
 
 ### Resultados
 
-> Preencha com o conteúdo de `lighthouse/summary.md` após rodar a auditoria e justifique qualquer valor abaixo da meta.
+✔ inicio / mobile
+✔ inicio / desktop
+✔ detalhe / mobile
+✔ detalhe / desktop
 
 ## Deploy (Vercel)
 

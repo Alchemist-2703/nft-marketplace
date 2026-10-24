@@ -44,10 +44,16 @@ test("logout e troca de usuário não vazam favoritos", async ({ page, isMobile 
   await page.goto("/nfts/nft-2")
   await page.getByRole("button", { name: /Favoritar/ }).click()
   await expect(page.getByRole("button", { name: /Favoritado/ })).toBeVisible()
+  await expect
+    .poll(() =>
+      page.evaluate(() => localStorage.getItem("mock-db-v1")?.includes('"user-1":["nft-2"]') ?? false),
+    )
+    .toBe(true)
   await page.reload()
   await expect(page.getByRole("button", { name: /Favoritado/ })).toBeVisible()
 
   await page.getByRole("button", { name: "Sair" }).click()
+  await expect(page.getByRole("link", { name: "Entrar" })).toBeVisible()
   await login(page, USERS.bruno)
   await page.goto("/nfts/nft-2")
   await expect(page.getByRole("button", { name: /♡ Favoritar/ })).toBeVisible()
@@ -71,6 +77,7 @@ test("sessão expirada durante o checkout redireciona e retoma depois do login",
   await addNftToCart(page, "nft-1")
   await page.getByRole("link", { name: "Conectar e finalizar" }).click()
   await expect(page.getByRole("heading", { name: "Pagamento com carteira" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Conectar", exact: true }).first()).toBeVisible()
 
   await expireServerSession(page)
   await page.getByRole("button", { name: "Conectar", exact: true }).first().click()

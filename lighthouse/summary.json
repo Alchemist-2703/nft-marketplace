@@ -1,0 +1,59 @@
+{
+  "environment": {
+    "lighthouse": "13.5.0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "node": "v24.19.0",
+    "platform": "win32",
+    "baseUrl": "http://localhost:4173"
+  },
+  "summary": [
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "runs": 3,
+      "performance": 92,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcpMs": 2923,
+      "cls": 0,
+      "tbtMs": 11
+    },
+    {
+      "page": "inicio",
+      "profile": "desktop",
+      "runs": 3,
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcpMs": 671,
+      "cls": 0,
+      "tbtMs": 0
+    },
+    {
+      "page": "detalhe",
+      "profile": "mobile",
+      "runs": 3,
+      "performance": 90,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcpMs": 3225,
+      "cls": 0,
+      "tbtMs": 6
+    },
+    {
+      "page": "detalhe",
+      "profile": "desktop",
+      "runs": 3,
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcpMs": 753,
+      "cls": 0.005,
+      "tbtMs": 0
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { createStore } from "@/lib/store"
 import type { Network } from "@/types/user"
+import type { CreateOrderInput } from "@/types/order"
 
 export interface CheckoutDraft {
   ownerId: string | null
@@ -9,8 +10,7 @@ export interface CheckoutDraft {
   name: string | null
   email: string | null
   pendingOrderId: string | null
-  attempt: { key: string; signature: string } | null
-}
+  attempt: { key: string; signature: string; input: CreateOrderInput } | null}
 
 export const initialDraft: CheckoutDraft = {
   ownerId: null,

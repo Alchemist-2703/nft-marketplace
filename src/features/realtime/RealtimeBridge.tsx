@@ -33,6 +33,7 @@ export function RealtimeBridge() {
       socket = created
 
       created.on("connect", () => {
+        console.info("[realtime] conectado")
         realtimeStatusStore.set("online")
         if (token && userId) {
           created.emit("session.subscribe", { token })
@@ -43,7 +44,10 @@ export function RealtimeBridge() {
         hasConnectedBefore = true
       })
       created.on("disconnect", () => realtimeStatusStore.set("offline"))
-      created.on("connect_error", () => realtimeStatusStore.set("offline"))
+      created.on("connect_error", (error) => {
+        console.warn("[realtime] erro de conexão:", error.message)
+        realtimeStatusStore.set("offline")
+      })
 
       created.on("nft.updated", (event: NftUpdatedEvent) => {
         if (guard.accept(event)) {

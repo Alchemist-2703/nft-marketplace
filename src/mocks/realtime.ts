@@ -1,16 +1,13 @@
 import { ws } from "msw"
-import { toSocketIo } from "@mswjs/socket.io-binding"
 import type { NftUpdatedEvent, OrderUpdatedEvent } from "@/types/events"
 import type { Nft } from "@/types/nft"
 import { applyNftChange, getDb, type NftChange, type OrderRecord } from "./db"
 import { hooks, settleOrder, toOrder } from "./engine"
-import { getScenario, setScenario } from "./scenarios"
-
-type SocketIoConnection = ReturnType<typeof toSocketIo>
+import { setScenario } from "./scenarios"
 
 interface MockClient {
-  io: SocketIoConnection
   userId: string | null
+  send: (data: string) => void
   close: () => void
 }
 
@@ -21,10 +18,6 @@ let lastNftEvent: NftUpdatedEvent | null = null
 function nextEventId(): string {
   sequence += 1
   return `evt_${Date.now().toString(36)}_${sequence}`
-}
-
-function lastArgument(args: unknown[]): unknown {
-  return args[args.length - 1]
 }
 
 function userIdFromToken(token: string | undefined): string | null {
@@ -38,7 +31,7 @@ function userIdFromToken(token: string | undefined): string | null {
 function broadcast(event: string, payload: unknown, filter?: (client: MockClient) => boolean): void {
   for (const client of clients) {
     if (!filter || filter(client)) {
-      client.io.client.emit(event, payload)
+      client.send(`42${JSON.stringify([event, payload])}`)
     }
   }
 }
@@ -81,41 +74,89 @@ export function emitOrderUpdated(order: OrderRecord): void {
 hooks.onEditionChanged = emitNftUpdated
 hooks.onOrderSettled = emitOrderUpdated
 
-const socketLink = ws.link("*/socket.io/")
+function randomId(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 20)
+}
 
-export const socketHandlers = [
-  socketLink.addEventListener("connection", (connection) => {
-    if (getScenario().socketBlocked) {
-      connection.client.close(4001, "Tempo real indisponível (cenário)")
-      return
+function parseClientEvent(packet: string): { name: string; payload: unknown } | null {
+  // 42[id opcional]["evento", payload]
+  const body = packet.slice(2).replace(/^\d+/, "")
+  try {
+    const parsed = JSON.parse(body) as unknown[]
+    return typeof parsed[0] === "string" ? { name: parsed[0], payload: parsed[1] } : null
+  } catch {
+    return null
+  }
+}
+
+function createSocketHandlers() {
+  const patterns = ["*"]
+  for (const pattern of patterns) {
+    try {
+      const link = ws.link(pattern)
+      return [
+        link.addEventListener("connection", ({ client, server }) => {
+        if (!client.url.pathname.startsWith("/socket.io")) {
+        server.connect()
+    
+        return
+        }
+
+          const mock: MockClient = {
+            userId: null,
+            send: (data) => client.send(data),
+            close: () => client.close(4000, "Conexão encerrada pelo mock"),
+          }
+          clients.add(mock)
+          console.info(`[mock-socket] cliente conectado (total: ${clients.size})`)
+
+          // Engine.IO v4: o servidor abre a sessão e mantém pings periódicos.
+          client.send(
+            `0${JSON.stringify({
+              sid: randomId(),
+              upgrades: [],
+              pingInterval: 25000,
+              pingTimeout: 20000,
+              maxPayload: 1000000,
+            })}`,
+          )
+          const keepAlive = window.setInterval(() => client.send("2"), 10_000)
+
+          client.addEventListener("message", (event) => {
+            if (typeof event.data !== "string") {
+              return
+            }
+            if (event.data.startsWith("40")) {
+              // Socket.IO CONNECT no namespace "/": responde com o id do socket
+              client.send(`40${JSON.stringify({ sid: randomId() })}`)
+              return
+            }
+            if (event.data.startsWith("42")) {
+              const parsed = parseClientEvent(event.data)
+              if (parsed?.name === "session.subscribe") {
+                const payload = parsed.payload as { token?: string } | undefined
+                mock.userId = userIdFromToken(payload?.token)
+              } else if (parsed?.name === "session.unsubscribe") {
+                mock.userId = null
+              }
+            }
+          })
+
+          client.addEventListener("close", () => {
+            window.clearInterval(keepAlive)
+            clients.delete(mock)
+            console.info(`[mock-socket] cliente desconectado (total: ${clients.size})`)
+          })
+        }),
+      ]
+    } catch (error) {
+      console.warn("[mock-socket] padrão de URL não aceito, tentando o próximo:", pattern, error)
     }
+  }
+  return []
+}
 
-    const io = toSocketIo(connection as unknown as Parameters<typeof toSocketIo>[0])
-    const client: MockClient = {
-      io,
-      userId: null,
-      close: () => connection.client.close(4000, "Conexão encerrada pelo mock"),
-    }
-    clients.add(client)
-
-    // Ping do Engine.IO enviado manualmente: o cliente espera pings do servidor
-    // e, sem eles, derrubaria a conexão por "ping timeout".
-    const keepAlive = window.setInterval(() => connection.client.send("2"), 10_000)
-
-    io.client.on("session.subscribe", (...args: unknown[]) => {
-      const payload = lastArgument(args) as { token?: string } | undefined
-      client.userId = userIdFromToken(payload?.token)
-    })
-    io.client.on("session.unsubscribe", () => {
-      client.userId = null
-    })
-
-    connection.client.addEventListener("close", () => {
-      window.clearInterval(keepAlive)
-      clients.delete(client)
-    })
-  }),
-]
+export const socketHandlers = createSocketHandlers()
 
 const timers = new Map<string, number>()
 

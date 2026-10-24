@@ -39,8 +39,7 @@ test("compra completa do catálogo ao recibo confirmado", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Seus NFTs agora estão na sua carteira" })).toBeVisible({
     timeout: 15_000,
   })
-  await expect(page.getByText("NFT #001")).toBeVisible()
-
+  await expect(page.getByText("NFT #001", { exact: true })).toBeVisible()
   await page.goto("/cart")
   await expect(page.getByRole("heading", { name: "Seu carrinho está vazio" })).toBeVisible()
 })
@@ -52,7 +51,7 @@ test("pagamento recusado mantém os itens no carrinho", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Pagamento recusado" })).toBeVisible({ timeout: 15_000 })
 
   await page.getByRole("link", { name: "Ver carrinho" }).click()
-  await expect(page.getByText("NFT #001")).toBeVisible()
+  await expect(page.getByText("NFT #001", { exact: true })).toBeVisible()
 })
 
 test("clique repetido não duplica o pedido", async ({ page }) => {

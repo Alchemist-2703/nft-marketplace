@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test"
 
 test("link de pular para o conteúdo é o primeiro item focável", async ({ page }) => {
   await page.goto("/")
+  await expect(page.getByRole("heading", { name: "Todos os NFTs" })).toBeVisible()
   await page.keyboard.press("Tab")
   await expect(page.getByRole("link", { name: "Ir para o conteúdo principal" })).toBeFocused()
 })
@@ -33,7 +34,7 @@ test("filtros em gaveta abrem e aplicam a busca (mobile)", async ({ page, isMobi
   await dialog.getByLabel("Buscar").fill("NFT #01")
   await dialog.getByLabel("Buscar").press("Enter")
   await expect(dialog).toBeHidden()
-  await expect(page.getByText("10 NFTs")).toBeVisible()
+await expect(page.getByText("10 NFTs", { exact: true })).toBeVisible()
 })
 
 test("skeleton aparece durante carregamento lento", async ({ page }) => {

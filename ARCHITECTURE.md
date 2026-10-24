@@ -5,7 +5,7 @@
 ```
 UI (React) ──> TanStack Router (rotas, search params, guardas)
           └──> TanStack Query (cache) ──> Axios (/api/*) ──> MSW (handlers REST)
-          └──> socket.io-client ───────────────────────────> MSW (ws.link + @mswjs/socket.io-binding)
+          └──> socket.io-client ───────────────────────────> MSW (ws.link + protocolo Socket.IO)
 ```
 
 Os componentes, hooks e o cliente Axios **não contêm respostas fictícias**: todo o "backend" vive em `src/mocks`, na camada de rede. O mesmo estado alimenta REST e eventos.

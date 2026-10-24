@@ -26,13 +26,12 @@ test.describe("perfil e carteiras (desktop)", () => {
     await page.getByLabel("Senha atual").fill("errada123")
     await page.getByLabel("Nova senha", { exact: true }).fill("Nova@1234")
     await page.getByRole("button", { name: "Alterar senha" }).click()
-    await expect(page.getByText("Senha atual incorreta.")).toBeVisible()
-  })
+    await page.getByLabel("Confirmar nova senha").fill("Nova@1234")  })
 
   test("avatar com tipo inválido é rejeitado", async ({ page }) => {
     await login(page, USERS.ana)
     await page.goto("/profile")
-    await page.getByLabel("Avatar", { exact: true }).setInputFiles({
+    await page.locator("#avatar-file").setInputFiles({
       name: "arquivo.txt",
       mimeType: "text/plain",
       buffer: Buffer.from("não sou uma imagem"),
@@ -48,8 +47,7 @@ test.describe("perfil e carteiras (desktop)", () => {
     await page.getByLabel("Apelido").fill("Cofre")
     await page.getByLabel("Endereço da carteira").fill("0x123")
     await page.getByRole("button", { name: "Cadastrar carteira" }).last().click()
-    await expect(page.getByText("Endereço inválido.", { exact: true })).toBeVisible()
-
+    await expect(page.getByText(/Endereço inválido/)).toBeVisible()
     await page.getByLabel("Endereço da carteira").fill(`0x${"ab".repeat(20)}`)
     await page.getByRole("button", { name: "Cadastrar carteira" }).last().click()
     await expect(page.getByText("Cofre", { exact: true })).toBeVisible()

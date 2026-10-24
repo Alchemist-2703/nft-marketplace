@@ -15,7 +15,6 @@ import { NETWORKS, networkLabel, shortAddress } from "@/features/checkout/consta
 import { useCreateOrder } from "@/features/checkout/hooks"
 import { useWalletConnection, useWallets } from "@/features/wallets/hooks"
 import { useStore } from "@/lib/store"
-import type { CreateOrderInput } from "@/types/order"
 import type { Network } from "@/types/user"
 
 interface Notice {
@@ -100,34 +99,37 @@ export function CheckoutPage() {
     setNotice(null)
 
     try {
-      const fresh = await queryClient.fetchQuery({
-        ...quoteQuery(ownerId, draft.couponCode, draft.network),
-        staleTime: 0,
-      })
+      let attempt = draft.attempt
 
-      if (fresh.id !== reviewedQuoteId || fresh.lines.some((line) => !line.isAvailable)) {
-        setReviewedQuoteId(fresh.id)
-        setNotice({
-          tone: "error",
-          text: "Preço, cupom ou disponibilidade mudou. Revise o resumo atualizado e confirme novamente.",
+      if (!attempt) {
+        const fresh = await queryClient.fetchQuery({
+          ...quoteQuery(ownerId, draft.couponCode, draft.network),
+          staleTime: 0,
         })
-        return
+
+        if (fresh.id !== reviewedQuoteId || fresh.lines.some((line) => !line.isAvailable)) {
+          setReviewedQuoteId(fresh.id)
+          setNotice({
+            tone: "error",
+            text: "Preço, cupom ou disponibilidade mudou. Revise o resumo atualizado e confirme novamente.",
+          })
+          return
+        }
+
+        attempt = {
+          key: crypto.randomUUID(),
+          signature: `${fresh.id}|${selectedWallet.id}|${draft.network}|${fresh.couponCode ?? ""}`,
+          input: {
+            quoteId: fresh.id,
+            walletId: selectedWallet.id,
+            network: draft.network,
+            couponCode: fresh.couponCode,
+          },
+        }
+        updateDraft({ attempt })
       }
 
-      const input: CreateOrderInput = {
-        quoteId: fresh.id,
-        walletId: selectedWallet.id,
-        network: draft.network,
-        couponCode: fresh.couponCode,
-      }
-      const signature = `${fresh.id}|${selectedWallet.id}|${draft.network}|${fresh.couponCode ?? ""}`
-      const attempt =
-        draft.attempt?.signature === signature
-          ? draft.attempt
-          : { key: crypto.randomUUID(), signature }
-      updateDraft({ attempt })
-
-      const order = await createOrder.mutateAsync({ input, key: attempt.key })
+      const order = await createOrder.mutateAsync({ input: attempt.input, key: attempt.key })
       updateDraft({ pendingOrderId: order.id, attempt: null })
       router.history.push(`/orders/${order.id}`)
     } catch (error) {
@@ -170,7 +172,21 @@ export function CheckoutPage() {
   }
 
   if (!data || data.lines.length === 0) {
-    return (
+    if (draft.attempt) {
+      return (
+        <div className="space-y-4 py-8 text-center">
+          <h1 className="text-2xl font-bold">Confirmando seu pedido</h1>
+          <p role="status" className="text-sm">
+            Não recebemos resposta do servidor. Seu pedido pode já ter sido criado: reenviaremos a mesma
+            solicitação, sem duplicar a compra.
+          </p>
+          <Button type="button" disabled={isSubmitting} onClick={handleConfirm}>
+            {isSubmitting ? "Confirmando…" : "Confirmar compra"}
+          </Button>
+        </div>
+      )
+    }
+return (
       <div className="space-y-4 py-8 text-center">
         <h1 className="text-2xl font-bold">Não há itens para pagar</h1>
         <Link to="/" className={buttonVariants()}>

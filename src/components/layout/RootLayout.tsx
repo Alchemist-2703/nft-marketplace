@@ -30,12 +30,13 @@ export function RootLayout() {
   const location = useLocation()
   const expired = useStore(expiredStore, (value) => value)
   const mainRef = useRef<HTMLElement>(null)
-  const firstRender = useRef(true)
+
 
   const pathname = location.pathname
   const href = location.href
   const onProtectedPage = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))
   const onAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup")
+  const previousPath = useRef(pathname)
 
   useEffect(() => {
     if (!expired) {
@@ -52,16 +53,16 @@ export function RootLayout() {
   }, [expired, onProtectedPage, onAuthPage, href, queryClient, router])
 
   useEffect(() => {
-    const match = TITLES.find(([prefix]) => pathname.startsWith(prefix))
-    document.title = match ? `${match[1]} · NFT Marketplace` : "NFT Marketplace"
+  const match = TITLES.find(([prefix]) => pathname.startsWith(prefix))
+  document.title = match ? `${match[1]} · NFT Marketplace` : "NFT Marketplace"
 
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
-    mainRef.current?.focus({ preventScroll: true })
-    window.scrollTo({ top: 0 })
-  }, [pathname])
+  if (previousPath.current === pathname) {
+    return
+  }
+  previousPath.current = pathname
+  mainRef.current?.focus({ preventScroll: true })
+  window.scrollTo({ top: 0 })
+}, [pathname])
 
   const showExpiredBanner = expired && !onProtectedPage && !onAuthPage
   const showPanel = MockPanel !== null && isPanelEnabled()
