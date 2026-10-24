@@ -145,7 +145,7 @@ Gera `lighthouse/reports/*.html|json` (3 medições por página e perfil) e `lig
 3. O arquivo `vercel.json` já reescreve todas as rotas para `/index.html` (acesso direto e refresh funcionam).
 4. O `.env.production` mantém `VITE_ENABLE_MOCKS=true`, então o build publicado traz os mocks e o tempo real.
 
-URL pública: _preencher_  ·  Repositório: _preencher_
+URL pública:(https://nft-marketplace-five-lac.vercel.app)  ·  Repositório:(https://github.com/Alchemist-2703/nft-marketplace)
 
 ## Estrutura
 
