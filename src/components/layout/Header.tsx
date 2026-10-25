@@ -63,8 +63,8 @@ export function Header() {
   return (
     <header className="border-b px-4 py-4 sm:px-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <Link to="/" className="text-lg font-bold focus-visible:outline-2 focus-visible:outline-ring">
-          NFT Marketplace
+        <Link to="/" className="text-sm font-bold tracking-[0.1em] focus-visible:outline-2 focus-visible:outline-ring">
+          KURIO
         </Link>
 
         <div className="flex items-center gap-4 text-sm">

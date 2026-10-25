@@ -2,10 +2,10 @@
 
 | Página | Perfil | Performance | Accessibility | Best Practices | SEO | LCP (ms) | CLS | TBT (ms) |
 |---|---|---|---|---|---|---|---|---|
-| inicio | mobile | 92 | 100 | 100 | 92 | 2923 | 0 | 11 |
-| inicio | desktop | 100 | 100 | 100 | 92 | 671 | 0 | 0 |
-| detalhe | mobile | 90 | 100 | 100 | 92 | 3225 | 0 | 6 |
-| detalhe | desktop | 100 | 100 | 100 | 92 | 753 | 0.005 | 0 |
+| inicio | mobile | 89 | 100 | 100 | 92 | 3261 | 0.022 | 67 |
+| inicio | desktop | 82 | 100 | 100 | 92 | 885 | 0.347 | 0 |
+| detalhe | mobile | 88 | 100 | 100 | 92 | 3476 | 0 | 20 |
+| detalhe | desktop | 98 | 100 | 100 | 92 | 872 | 0.071 | 0 |
 
 - Lighthouse: 13.5.0
 - Navegador: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36

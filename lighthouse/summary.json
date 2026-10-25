@@ -11,48 +11,48 @@
       "page": "inicio",
       "profile": "mobile",
       "runs": 3,
-      "performance": 92,
+      "performance": 89,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 92,
-      "lcpMs": 2923,
-      "cls": 0,
-      "tbtMs": 11
+      "lcpMs": 3261,
+      "cls": 0.022,
+      "tbtMs": 67
     },
     {
       "page": "inicio",
       "profile": "desktop",
       "runs": 3,
-      "performance": 100,
+      "performance": 82,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 92,
-      "lcpMs": 671,
-      "cls": 0,
+      "lcpMs": 885,
+      "cls": 0.347,
       "tbtMs": 0
     },
     {
       "page": "detalhe",
       "profile": "mobile",
       "runs": 3,
-      "performance": 90,
+      "performance": 88,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 92,
-      "lcpMs": 3225,
+      "lcpMs": 3476,
       "cls": 0,
-      "tbtMs": 6
+      "tbtMs": 20
     },
     {
       "page": "detalhe",
       "profile": "desktop",
       "runs": 3,
-      "performance": 100,
+      "performance": 98,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 92,
-      "lcpMs": 753,
-      "cls": 0.005,
+      "lcpMs": 872,
+      "cls": 0.071,
       "tbtMs": 0
     }
   ]

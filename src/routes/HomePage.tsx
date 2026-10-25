@@ -11,6 +11,10 @@ import { NftGridSkeleton } from "@/features/catalog/components/NftGridSkeleton"
 import { Pagination } from "@/features/catalog/components/Pagination"
 import { PAGE_SIZE, SORT_OPTIONS } from "@/features/catalog/constants"
 import { nftListQuery } from "@/features/catalog/queries"
+import { BlogSection } from "@/features/home/components/BlogSection"
+import { FeaturedBanner } from "@/features/home/components/FeaturedBanner"
+import { Hero } from "@/features/home/components/Hero"
+import { PromoCards } from "@/features/home/components/PromoCards"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import type { NftSort } from "@/types/nft"
 
@@ -67,89 +71,114 @@ export function HomePage() {
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[310px_1fr]">
-      {isDesktop && (
-        <aside aria-label="Filtros">
-          <CatalogFilters key={filtersKey} search={search} />
-        </aside>
-      )}
+    <>
+      <Hero />
 
-      <section aria-labelledby="catalog-title" className="min-w-0">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <h1 id="catalog-title" className="text-lg font-bold">
-            Todos os NFTs
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {!isDesktop && (
-              <Button
-                type="button"
-                variant="outline"
-                aria-haspopup="dialog"
-                onClick={() => setFiltersOpen(true)}
-              >
-                Filtros{hasFilters ? " (ativos)" : ""}
-              </Button>
-            )}
-            <Label htmlFor="sort" className="whitespace-nowrap">
-              Ordenar por:
-            </Label>
-            <NativeSelect
-              id="sort"
-              className="w-56 max-w-full"
-              value={search.sort ?? "newest"}
-              onChange={(event) =>
-                navigate({
-                  search: (prev) => ({
-                    ...prev,
-                    sort: event.target.value as NftSort,
-                    page: undefined,
-                  }),
-                })
-              }
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-        </div>
-
-        <p role="status" className="sr-only">
-          {data ? `${data.total} NFTs encontrados` : ""}
-        </p>
-        {data && !isError && (
-          <p className="mb-4 text-sm text-muted-foreground">
-            {data.total} NFTs {isRefreshing ? "· atualizando..." : ""}
-          </p>
-        )}
-
-        {content}
-      </section>
-
-      {!isDesktop && (
-        <Drawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filtros">
-          {filtersOpen && (
-            <div
-              onSubmit={() => setFiltersOpen(false)}
-              onChange={(event) => {
-                if (event.target instanceof HTMLSelectElement) {
-                  setFiltersOpen(false)
-                }
-              }}
-              onClick={(event) => {
-                if ((event.target as HTMLElement).closest("button[type=button]")) {
-                  setFiltersOpen(false)
-                }
-              }}
-            >
+      <div id="catalogo" className="grid scroll-mt-6 gap-10 lg:grid-cols-[310px_1fr]">
+        {isDesktop && (
+          <aside aria-label="Filtros" className="space-y-6">
+            <div className="bg-card p-5">
               <CatalogFilters key={filtersKey} search={search} />
             </div>
+            <FeaturedBanner />
+          </aside>
+        )}
+
+        <section aria-labelledby="catalog-title" className="min-w-0">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-5">
+              <h2
+                id="catalog-title"
+                className="border-b-2 border-highlight pb-1 text-[15px] font-medium text-highlight"
+              >
+                Todos os NFTs
+              </h2>
+              {["Novos lançamentos", "Em alta"].map((label) => (
+                <span
+                  key={label}
+                  aria-disabled="true"
+                  title="Indisponível nesta versão"
+                  className="pb-1 text-[15px] font-medium opacity-50"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {!isDesktop && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-haspopup="dialog"
+                  onClick={() => setFiltersOpen(true)}
+                >
+                  Filtros{hasFilters ? " (ativos)" : ""}
+                </Button>
+              )}
+              <Label htmlFor="sort" className="whitespace-nowrap">
+                Ordenar por:
+              </Label>
+              <NativeSelect
+                id="sort"
+                className="w-56 max-w-full"
+                value={search.sort ?? "newest"}
+                onChange={(event) =>
+                  navigate({
+                    search: (prev) => ({
+                      ...prev,
+                      sort: event.target.value as NftSort,
+                      page: undefined,
+                    }),
+                  })
+                }
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+          </div>
+
+          <p role="status" className="sr-only">
+            {data ? `${data.total} NFTs encontrados` : ""}
+          </p>
+          {data && !isError && (
+            <p className="mb-4 text-sm text-muted-foreground">
+              {data.total} NFTs {isRefreshing ? "· atualizando..." : ""}
+            </p>
           )}
-        </Drawer>
-      )}
-    </div>
+
+          {content}
+        </section>
+
+        {!isDesktop && (
+          <Drawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filtros">
+            {filtersOpen && (
+              <div
+                onSubmit={() => setFiltersOpen(false)}
+                onChange={(event) => {
+                  if (event.target instanceof HTMLSelectElement) {
+                    setFiltersOpen(false)
+                  }
+                }}
+                onClick={(event) => {
+                  if ((event.target as HTMLElement).closest("button[type=button]")) {
+                    setFiltersOpen(false)
+                  }
+                }}
+              >
+                <CatalogFilters key={filtersKey} search={search} />
+              </div>
+            )}
+          </Drawer>
+        )}
+      </div>
+
+      <PromoCards />
+      <BlogSection />
+    </>
   )
 }

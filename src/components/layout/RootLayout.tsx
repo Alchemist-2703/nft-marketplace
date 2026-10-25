@@ -7,6 +7,7 @@ import { RealtimeNotices } from "@/features/realtime/RealtimeNotices"
 import { useStore } from "@/lib/store"
 import { isPanelEnabled } from "@/mocks/panel-flag"
 import { Header } from "./Header"
+import { SiteFooter } from "@/features/home/components/SiteFooter"
 
 const PROTECTED_PREFIXES = ["/checkout", "/orders", "/profile", "/wallets"]
 
@@ -106,6 +107,7 @@ export function RootLayout() {
       >
         <Outlet />
       </main>
+      <SiteFooter />
 
       {showPanel && MockPanel && (
         <Suspense fallback={null}>

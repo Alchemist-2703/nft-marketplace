@@ -4,19 +4,7 @@ const categories = ["Arte", "Música", "Jogos", "Fotografia", "Colecionáveis"]
 const creators = ["Aurora Labs", "Pixel Forge", "Nova Studio", "Cripto Atelier", "Blue Orbit"]
 const attributePool = ["Óculos", "Esmeralda", "Raro", "Dourado", "Neon", "Clássico"]
 
-function placeholderImage(seed: number, label: string): string {
-  const hue = (seed * 47) % 360
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">` +
-    `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
-    `<stop offset="0" stop-color="hsl(${hue},70%,45%)"/>` +
-    `<stop offset="1" stop-color="hsl(${(hue + 60) % 360},70%,25%)"/>` +
-    `</linearGradient></defs>` +
-    `<rect width="600" height="600" fill="url(#g)"/>` +
-    `<text x="300" y="315" font-size="40" fill="white" text-anchor="middle" font-family="sans-serif">${label}</text>` +
-    `</svg>`
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-}
+const ARTWORKS = ["/art/nft-1.png", "/art/nft-2.png", "/art/nft-3.png", "/art/nft-4.png"]
 
 export function createNftFixtures(): Nft[] {
   return Array.from({ length: 36 }, (_, index) => {
@@ -34,12 +22,7 @@ export function createNftFixtures(): Nft[] {
       collection: `${creator} Collection`,
       category: categories[n % categories.length],
       attributes: [attributePool[n % attributePool.length], attributePool[(n + 2) % attributePool.length]],
-      images: [
-        placeholderImage(n, name),
-        placeholderImage(n + 100, `${name} - detalhe`),
-        placeholderImage(n + 200, `${name} - bastidores`),
-        placeholderImage(n + 300, `${name} - arte final`),
-      ],
+      images: [0, 1, 2, 3].map((offset) => ARTWORKS[(n + offset) % ARTWORKS.length]),
       editions: [
         {
           id: `nft-${n}-common`,
